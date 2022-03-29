@@ -2,6 +2,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from 'cors'
+import path from "path";
 
 import sauceRoutes from "./routes/sauce-routes";
 import userRoutes from "./routes/user-routes";
@@ -28,6 +29,7 @@ export function appRoutes() {
     app.use(express.json())
 
     // Sauce routes
+    app.use('../images', express.static(path.join(__dirname, 'images')))
     app.use('/api/auth', userRoutes)
     app.use('/api/sauces', sauceRoutes)
 
