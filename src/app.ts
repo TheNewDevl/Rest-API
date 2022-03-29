@@ -29,7 +29,7 @@ export function appRoutes() {
     app.use(express.json())
 
     // Sauce routes
-    app.use('../images', express.static(path.join(__dirname, 'images')))
+    app.use('/images', express.static(path.join(__dirname, 'images')))
     app.use('/api/auth', userRoutes)
     app.use('/api/sauces', sauceRoutes)
 
@@ -40,4 +40,4 @@ export function appRoutes() {
 
 }
 
-export default app
+export default app 

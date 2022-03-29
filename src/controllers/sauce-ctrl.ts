@@ -37,7 +37,7 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
         // Instantiate a new sauce usins the parsed body properties and the file for imageUrl
         const sauce = new Sauce({
             ...parsedBody,
-            imageUrl: `${req.protocol}://${req.get('host')}/dist/images/${req.file.filename}`
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
         })
 
         // save the new sauce in the database
@@ -48,4 +48,23 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
+export const modifySauce = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Parse the request body to a JSON object if contains file property
+        const sauceData = req.file
+            ? {
+                ...JSON.parse(req.body.sauce),
+                imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+            } : { ...req.body }
 
+        // parse the request body to a JSON object
+        const parsedBody = JSON.parse(req.body.sauce)
+
+        // update the sauce in the database using the sauce id and the new sauce data
+        const updatedSauce = await Sauce.updateOne({ _id: req.params.id }, { ...sauceData, _id: req.params.id })
+        res.status(200).json({ message: 'Sauce modifiée' + updatedSauce })
+    } catch (error) {
+        res.status(400).json({ error })
+    }
+
+}
