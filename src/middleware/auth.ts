@@ -7,7 +7,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     try {
         // Check if contains Authorization header
         if (!req.headers.authorization) {
-            throw 'Pas de Token !'
+            throw 'Outil d\'identification absent !'
         } else {
             const token = req.headers.authorization.split(' ')[1];
 
@@ -16,10 +16,9 @@ export default (req: Request, res: Response, next: NextFunction) => {
 
             const userId: string = decodedToken.userId;
 
-            // Store decoded userId in request object
+            // Store decoded userId in request object to use it in next middlewares
             req.auth = { userId: userId }
-            console.log(req.auth);
-            console.log('test' + req.body.userId)
+
             // if req token exsists ans is valid, continue
             if (req.body.userId && req.body.userId !== userId) {
                 throw 'User Id non valable !'
