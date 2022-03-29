@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Sauce from "../models/Sauce";
+import fs from 'fs'
 
 /** Get all sauces drom DB */
 export const getAllSauces = async (req: Request, res: Response, next: NextFunction) => {
@@ -29,7 +30,7 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
     try {
         // check if file property exists
         if (!req.file) {
-            throw 'Image non trouvée'
+            throw 'Aucun fichier n\'a été envoyé'
         }
         // parse the request body to a JSON object
         const parsedBody = JSON.parse(req.body.sauce)
@@ -47,7 +48,7 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
         res.status(400).json({ error })
     }
 }
-
+/** Update one Sauce if exists with or without new file */
 export const modifySauce = async (req: Request, res: Response, next: NextFunction) => {
     try {
         // Parse the request body to a JSON object if contains file property
@@ -66,5 +67,26 @@ export const modifySauce = async (req: Request, res: Response, next: NextFunctio
     } catch (error) {
         res.status(400).json({ error })
     }
+}
 
+export const deleteSauce = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        //Check if the userId sauce corresponds to userId request to prevent deletion by someone else
+        const sauceToDelete = await Sauce.findOne({ _id: req.params.id })
+        if (!sauceToDelete) {
+            throw 'Sauce non trouvée'
+        } if (sauceToDelete.uderId !== req.auth._id) {
+            throw 'Vous n\'avez pas le droit de supprimer cette sauce'
+        }
+
+        // Using unlink method from fs module to delete file in server and use the callback function to check if the file has been deleted
+        const filename = sauceToDelete.imageUrl.split('/images/')[1]
+        fs.unlink(`images/${filename}`, async () => {
+            await Sauce.deleteOne({ _id: req.params.id })
+        })
+
+        res.status(200).json({ message: 'Sauce supprimée' })
+    } catch (error) {
+        res.status(500).json({ error })
+    }
 }

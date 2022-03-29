@@ -8,6 +8,7 @@ const router = express.Router()
 router.get('/', auth, sauceControllers.getAllSauces);
 router.get('/:id', auth, sauceControllers.getOneSauce);
 router.post('/', auth, multer, sauceControllers.createSauce);
-router.post('/:id', auth, sauceControllers.modifySauce);
+router.post('/:id', auth, multer, sauceControllers.modifySauce);
+router.delete('/:id', auth, sauceControllers.deleteSauce);
 
 export default router;
