@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import Sauce from "../models/Sauce";
+import { NextFunction, Request, Response } from 'express'
+import Sauce from '../models/Sauce'
 
 /** 
  * Check if the userID corresponds with Sauce user Id

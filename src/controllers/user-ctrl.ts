@@ -1,8 +1,9 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
-import User from "../models/User";
-import { NextFunction, Request, Response } from "express";
+import User from '../models/User'
+import { Request, Response } from 'express'
+
 
 /** Check if password is strong enough and not contain dangerous characters */
 const isPasswordStrongEnough = (password: string): boolean => {
@@ -17,7 +18,7 @@ const isEmailValid = (email: string): boolean => {
 }
 
 /** If password is strong enough and email is valid, hash password and create new user */
-export const signUp = async (req: Request, res: Response, next: NextFunction) => {
+export const signUp = async (req: Request, res: Response) => {
     if (!isEmailValid(req.body.email)) {
         return res.status(400).json({ error: 'Email invalide !' })
     }
@@ -30,24 +31,24 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
         const user = new User({
             email: req.body.email,
             password: hashKey
-        });
-        await user.save();
-        res.status(201).json({ message: 'Utilisateur créé' });
+        })
+        await user.save()
+        res.status(201).json({ message: 'Utilisateur créé' })
     } catch (error) {
-        res.status(400).json({ error });
+        res.status(400).json({ error })
     }
 }
 
 // Try to find user, then check if password is correct, then create and send token
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response) => {
     try {
         const findedUser = await User.findOne({ email: req.body.email })
         if (!findedUser) {
-            throw 'Utilisateur non trouvé';
+            throw 'Utilisateur non trouvé'
         }
-        const passwordIsValid = await bcrypt.compare(req.body.password, findedUser.password);
+        const passwordIsValid = await bcrypt.compare(req.body.password, findedUser.password)
         if (!passwordIsValid) {
-            throw 'Mot de passe incorrect';
+            throw 'Mot de passe incorrect'
         }
         res.status(200).json({
             userId: findedUser._id,
@@ -56,9 +57,9 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
                 (process.env.KEY as string),
                 { expiresIn: '24h' }
             )
-        });
+        })
     } catch (error) {
-        res.status(401).json({ error: error || 'Erreur serveur' });
+        res.status(401).json({ error: error || 'Erreur serveur' })
     }
 }
 

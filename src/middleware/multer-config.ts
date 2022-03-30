@@ -1,6 +1,6 @@
 // Import dependancies
-import { Request } from 'express';
-import multer from 'multer';
+import { Request } from 'express'
+import multer from 'multer'
 
 type Mimetype = {
     [key: string]: string,
@@ -13,7 +13,7 @@ const MIME_TYPES: Mimetype = {
 }
 
 /** Filter upload files. Only accept the mimetypes in the MIME_TYPES object */
-const filterImage = (req: Request, file: any, cb: CallableFunction) => {
+const filterImage = (req: Request, file: Express.Multer.File, cb: CallableFunction) => {
     if (!MIME_TYPES[file.mimetype]) {
         return cb(new Error('Format de fichier non supporté'), false)
     }
@@ -27,13 +27,13 @@ const limits = {
 
 // Set storage for upload files
 const storage = multer.diskStorage({
-    destination: (req, file, callback) => {
-        callback(null, 'images')
+    destination: (req, file, fncallback) => {
+        fncallback(null, 'images')
     },
-    filename: (req, file, callback) => {
+    filename: (req: Request, file: Express.Multer.File, fncallback) => {
         const name = file.originalname.split(' ').join('_')
         const extension = MIME_TYPES[file.mimetype]
-        callback(null, name + Date.now() + '.' + extension)
+        fncallback(null, name + Date.now() + '.' + extension)
     }
 
 })

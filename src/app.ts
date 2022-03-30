@@ -1,21 +1,21 @@
 // Import Express
-import express from "express";
-import mongoose from "mongoose";
+import express, { Request, Response } from 'express'
+import mongoose from 'mongoose'
 import cors from 'cors'
-import path from "path";
+import path from 'path'
 
-import sauceRoutes from "./routes/sauce-routes";
-import userRoutes from "./routes/user-routes";
+import sauceRoutes from './routes/sauce-routes'
+import userRoutes from './routes/user-routes'
 
 // Start connexion to MongoDB
 function connectDB(): void {
     const MONGO_URI: string | undefined = process.env.LOG
     mongoose.connect(String(MONGO_URI))
-        .then(() => console.log("Connected to database"))
-        .catch(err => console.log(err));
+        .then(() => console.log('Connected to database'))
+        .catch(err => console.log(err))
 }
 
-const app = express();
+const app = express()
 
 export const appManager = () => {
 
@@ -34,8 +34,8 @@ export const appManager = () => {
     app.use('/api/sauces', sauceRoutes)
 
     // 404 status for all routes not found
-    app.use((req, res, next) => {
-        res.status(404).send("Page not found")
+    app.use((req: Request, res: Response) => {
+        res.status(404).send('Page not found')
     })
 
 }

@@ -1,9 +1,24 @@
-import { NextFunction, Request, Response } from "express";
-import Sauce from "../models/Sauce";
+import { Request, Response } from 'express'
+import Sauce from '../models/Sauce'
 import fs from 'fs'
 
+type sauce = {
+    _id: string,
+    userId: string,
+    name: string,
+    manufacturer: string,
+    description: string,
+    mainPepper: string,
+    imageUrl: string,
+    heat: number,
+    likes: number,
+    dislikes: number,
+    usersLiked: string[],
+    usersDisliked: string[]
+}
+
 /** Create a new Sauce In DataBase  */
-export const createSauce = async (req: Request, res: Response, next: NextFunction) => {
+export const createSauce = async (req: Request, res: Response) => {
     try {
         // check if file property exists
         if (!req.file) {
@@ -30,7 +45,7 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
 }
 
 /** Get all sauces drom DB */
-export const getAllSauces = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllSauces = async (req: Request, res: Response) => {
     try {
         const sauces = await Sauce.find()
         res.status(200).json(sauces)
@@ -40,7 +55,7 @@ export const getAllSauces = async (req: Request, res: Response, next: NextFuncti
 }
 
 /** Get one sauce from DB */
-export const getOneSauce = async (req: Request, res: Response, next: NextFunction) => {
+export const getOneSauce = async (req: Request, res: Response) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id })
         if (!sauce) {
@@ -53,7 +68,7 @@ export const getOneSauce = async (req: Request, res: Response, next: NextFunctio
 }
 
 /** Update one Sauce if exists with or without new file */
-export const modifySauce = async (req: Request, res: Response, next: NextFunction) => {
+export const modifySauce = async (req: Request, res: Response) => {
     try {
         // Parse the request body to a JSON object if contains file property
         const sauceData = req.file
@@ -71,7 +86,7 @@ export const modifySauce = async (req: Request, res: Response, next: NextFunctio
 }
 
 /** Allow user to delete their own sauce */
-export const deleteSauce = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteSauce = async (req: Request, res: Response) => {
     try {
         // Find the sauce in DB to use the url to delete the image
         const sauceToDelete = await Sauce.findOne({ _id: req.params.id })
@@ -93,12 +108,12 @@ const isLikeValidNumber = (likeNumber: number): boolean => {
     return likeNumber >= -1 && likeNumber <= 1 && typeof likeNumber === 'number'
 }
 /** Return true if usersLiked[] ou usersDisliked[] contain userId  */
-const alreadyLikeOrDisliked = (sauce: any, userId: String): boolean => {
+const alreadyLikeOrDisliked = (sauce: sauce, userId: string): boolean => {
     return sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)
 }
 
 /** Puts the like and the userId in the right place checking all possibilities */
-export const likeManagement = async (req: Request, res: Response, next: NextFunction) => {
+export const likeManagement = async (req: Request, res: Response) => {
     try {
         if (!isLikeValidNumber(req.body.like)) {
             throw 'Le like doit être un nombre compris entre -1 et 1'
@@ -116,7 +131,7 @@ export const likeManagement = async (req: Request, res: Response, next: NextFunc
                 } else {
                     throw 'Vous n\'avez pas encore donné votre avis sur cette sauce !'
                 }
-                break;
+                break
             case 1:
                 if (alreadyLikeOrDisliked(sauceToUpdate, userId)) {
                     throw 'Vous avez déjà donné votre avis sur cette sauce !'
@@ -130,7 +145,7 @@ export const likeManagement = async (req: Request, res: Response, next: NextFunc
                 } else {
                     await Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $push: { usersDisliked: userId } })
                 }
-                break;
+                break
         }
         res.status(201).json({ message: 'Votre avis a été enregistré !' })
     } catch (error) {
