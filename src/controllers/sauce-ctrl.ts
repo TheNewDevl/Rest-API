@@ -2,29 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import Sauce from "../models/Sauce";
 import fs from 'fs'
 
-/** Get all sauces drom DB */
-export const getAllSauces = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const sauces = await Sauce.find()
-        res.status(200).json(sauces)
-    } catch (error) {
-        res.status(400).json({ error })
-    }
-}
-
-/** Get one sauce from DB */
-export const getOneSauce = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const sauce = await Sauce.findOne({ _id: req.params.id })
-        if (!sauce) {
-            throw 'Sauce non trouvée'
-        }
-        res.status(200).json(sauce)
-    } catch (error) {
-        res.status(400).json({ message: 'Sauce non trouvée', error })
-    }
-}
-
 /** Create a new Sauce In DataBase  */
 export const createSauce = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -52,6 +29,28 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
+/** Get all sauces drom DB */
+export const getAllSauces = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const sauces = await Sauce.find()
+        res.status(200).json(sauces)
+    } catch (error) {
+        res.status(400).json({ error })
+    }
+}
+
+/** Get one sauce from DB */
+export const getOneSauce = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const sauce = await Sauce.findOne({ _id: req.params.id })
+        if (!sauce) {
+            throw 'Sauce non trouvée'
+        }
+        res.status(200).json(sauce)
+    } catch (error) {
+        res.status(400).json({ message: 'Sauce non trouvée', error })
+    }
+}
 
 /** Update one Sauce if exists with or without new file */
 export const modifySauce = async (req: Request, res: Response, next: NextFunction) => {
@@ -70,6 +69,7 @@ export const modifySauce = async (req: Request, res: Response, next: NextFunctio
         res.status(400).json({ error })
     }
 }
+
 /** Allow user to delete their own sauce */
 export const deleteSauce = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -93,23 +93,29 @@ export const deleteSauce = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-const isLikeNumberValid = (likeNumber: number) => {
+/** Check if input is a number and only accepts -1,0,1  */
+const isLikeValidNumber = (likeNumber: number): boolean => {
     return likeNumber >= -1 && likeNumber <= 1 && typeof likeNumber === 'number'
 }
+/** Return true if usersLiked[] ou usersDisliked[] contain userId  */
+const alreadyLikeOrDisliked = (sauce: any, userId: String): boolean => {
+    return sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)
+}
 
-
-
+/** Puts the like and the userId in the right place checking all possibilities */
 export const likeManagement = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // Check if number input is valid
-        if (!isLikeNumberValid(req.body.like)) {
+        if (!isLikeValidNumber(req.body.like)) {
             throw 'Le like doit être un nombre compris entre -1 et 1'
         }
+        const userId = req.body.userId
+
+        // Retrieve the sauce from DB
         const sauceToUpdate = await Sauce.findOne({ _id: req.params.id })
         switch (req.body.like) {
             case 0:
                 if (sauceToUpdate.usersLiked.includes(req.body.userId)) {
-                    await Sauce.updateOne({ _id: req.params.id }, { $pull: { usersLiked: req.body.userId }, $inc: { likes: 1 } })
+                    await Sauce.updateOne({ _id: req.params.id }, { $pull: { usersLiked: req.body.userId }, $inc: { likes: -1 } })
                 } else if (sauceToUpdate.usersDisliked.includes(req.body.userId)) {
                     await Sauce.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: req.body.userId }, $inc: { dislikes: -1 } })
                 } else {
@@ -117,21 +123,21 @@ export const likeManagement = async (req: Request, res: Response, next: NextFunc
                 }
                 break;
             case 1:
-                if (!sauceToUpdate.usersLiked.includes(req.body.userId) && !sauceToUpdate.usersDisliked.includes(req.body.userId)) {
-                    await Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId } })
-                } else {
+                if (alreadyLikeOrDisliked(sauceToUpdate, userId)) {
                     throw 'Vous avez déjà donné votre avis sur cette sauce !'
+                } else {
+                    await Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: +1 }, $push: { usersLiked: userId } })
                 }
-                break;
+                break
             case -1:
-                if (!sauceToUpdate.usersLiked.includes(req.body.userId) && !sauceToUpdate.usersDisliked.includes(req.body.userId)) {
-                    await Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId } })
-                } else {
+                if (alreadyLikeOrDisliked(sauceToUpdate, userId)) {
                     throw 'Vous avez déjà donné votre avis sur cette sauce !'
+                } else {
+                    await Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $push: { usersDisliked: userId } })
                 }
                 break;
         }
-        res.status(200).json({ message: 'Like modifié' + sauceToUpdate })
+        res.status(201).json({ message: 'Votre avis a été enregistré !' })
     } catch (error) {
         res.status(500).json({ error: error })
     }
