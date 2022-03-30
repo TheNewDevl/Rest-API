@@ -3,7 +3,7 @@ import Sauce from "../models/Sauce";
 
 /** 
  * Check if the userID corresponds with Sauce user Id
- * prevent deletion by someone else
+ * prevent deletion or uptade by someone else
  */
 export default async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -11,7 +11,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         if (!sauce) {
             throw 'Il y a eu un problème, la sauce n\'a pas été trouvée'
         }
-        if (sauce.userId !== req.body.userId) {
+        if (sauce.userId !== req.auth.userId) {
             throw 'Vous n\'avez pas le droit de modifier cette sauce... :( '
         }
         next()

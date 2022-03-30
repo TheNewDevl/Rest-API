@@ -73,13 +73,8 @@ export const modifySauce = async (req: Request, res: Response, next: NextFunctio
 /** Allow user to delete their own sauce */
 export const deleteSauce = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        //Check if the userId sauce corresponds to userId request to prevent deletion by someone else
+        // Find the sauce in DB to use the url to delete the image
         const sauceToDelete = await Sauce.findOne({ _id: req.params.id })
-        if (!sauceToDelete) {
-            throw 'Sauce non trouvée'
-        } if (sauceToDelete.uderId !== req.auth._id) {
-            throw 'Vous n\'avez pas le droit de supprimer cette sauce'
-        }
 
         // Using unlink method from fs module to delete file in server and use the callback function to check if the file has been deleted
         const filename = sauceToDelete.imageUrl.split('/images/')[1]
@@ -142,5 +137,3 @@ export const likeManagement = async (req: Request, res: Response, next: NextFunc
         res.status(500).json({ error: error })
     }
 }
-
-
