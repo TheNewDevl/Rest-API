@@ -32,8 +32,11 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
         if (!req.file) {
             throw 'Aucun fichier n\'a été envoyé'
         }
+
         // parse the request body to a JSON object
         const parsedBody = JSON.parse(req.body.sauce)
+
+        delete parsedBody._id
 
         // Instantiate a new sauce usins the parsed body properties and the file for imageUrl
         const sauce = new Sauce({
@@ -48,6 +51,8 @@ export const createSauce = async (req: Request, res: Response, next: NextFunctio
         res.status(400).json({ error })
     }
 }
+
+
 /** Update one Sauce if exists with or without new file */
 export const modifySauce = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -58,9 +63,6 @@ export const modifySauce = async (req: Request, res: Response, next: NextFunctio
                 imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
             } : { ...req.body }
 
-        // parse the request body to a JSON object
-        const parsedBody = JSON.parse(req.body.sauce)
-
         // update the sauce in the database using the sauce id and the new sauce data
         const updatedSauce = await Sauce.updateOne({ _id: req.params.id }, { ...sauceData, _id: req.params.id })
         res.status(200).json({ message: 'Sauce modifiée' + updatedSauce })
@@ -68,7 +70,7 @@ export const modifySauce = async (req: Request, res: Response, next: NextFunctio
         res.status(400).json({ error })
     }
 }
-
+/** Allow user to delete their own sauce */
 export const deleteSauce = async (req: Request, res: Response, next: NextFunction) => {
     try {
         //Check if the userId sauce corresponds to userId request to prevent deletion by someone else
@@ -90,3 +92,49 @@ export const deleteSauce = async (req: Request, res: Response, next: NextFunctio
         res.status(500).json({ error })
     }
 }
+
+const isLikeNumberValid = (likeNumber: number) => {
+    return likeNumber >= -1 && likeNumber <= 1 && typeof likeNumber === 'number'
+}
+
+
+
+export const likeManagement = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Check if number input is valid
+        if (!isLikeNumberValid(req.body.like)) {
+            throw 'Le like doit être un nombre compris entre -1 et 1'
+        }
+        const sauceToUpdate = await Sauce.findOne({ _id: req.params.id })
+        switch (req.body.like) {
+            case 0:
+                if (sauceToUpdate.usersLiked.includes(req.body.userId)) {
+                    await Sauce.updateOne({ _id: req.params.id }, { $pull: { usersLiked: req.body.userId }, $inc: { likes: 1 } })
+                } else if (sauceToUpdate.usersDisliked.includes(req.body.userId)) {
+                    await Sauce.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: req.body.userId }, $inc: { dislikes: -1 } })
+                } else {
+                    throw 'Vous n\'avez pas encore donné votre avis sur cette sauce !'
+                }
+                break;
+            case 1:
+                if (!sauceToUpdate.usersLiked.includes(req.body.userId) && !sauceToUpdate.usersDisliked.includes(req.body.userId)) {
+                    await Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: 1 }, $push: { usersLiked: req.body.userId } })
+                } else {
+                    throw 'Vous avez déjà donné votre avis sur cette sauce !'
+                }
+                break;
+            case -1:
+                if (!sauceToUpdate.usersLiked.includes(req.body.userId) && !sauceToUpdate.usersDisliked.includes(req.body.userId)) {
+                    await Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $push: { usersDisliked: req.body.userId } })
+                } else {
+                    throw 'Vous avez déjà donné votre avis sur cette sauce !'
+                }
+                break;
+        }
+        res.status(200).json({ message: 'Like modifié' + sauceToUpdate })
+    } catch (error) {
+        res.status(500).json({ error: error })
+    }
+}
+
+

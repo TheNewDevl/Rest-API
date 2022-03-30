@@ -8,7 +8,8 @@ const router = express.Router()
 router.get('/', auth, sauceControllers.getAllSauces);
 router.get('/:id', auth, sauceControllers.getOneSauce);
 router.post('/', auth, multer, sauceControllers.createSauce);
-router.post('/:id', auth, multer, sauceControllers.modifySauce);
+router.put('/:id', auth, multer, sauceControllers.modifySauce);
 router.delete('/:id', auth, sauceControllers.deleteSauce);
+router.post('/:id/like', sauceControllers.likeManagement)
 
 export default router;
