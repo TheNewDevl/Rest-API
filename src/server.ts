@@ -1,28 +1,6 @@
 /** Import Dependancies */
 import http from 'http';
-import app, { appRoutes } from './app';
-
-/** Normalize a port into a number, string, or false. */
-function normalizePort(val: any): number | string | boolean {
-    let port = parseInt(val, 10);
-    if (isNaN(port)) {
-        // named pipe
-        return val;
-    }
-    if (port >= 0) {
-        // port number
-        return port;
-    }
-    return false;
-}
-
-function onListening(): void {
-    const addr = mainServer.server.address();
-    const bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : `port ` + addr.port;
-    console.log('Listening on ' + bind);
-}
+import app, { appManager } from './app';
 
 class Server {
 
@@ -35,24 +13,41 @@ class Server {
         //Create HTTP Server
         this.server = http.createServer(app)
 
-        // Get port from env and store in Express
-        this.port = normalizePort(process.env.PORT || 3000);
+        // Set port
+        this.port = this.normalizePort(process.env.PORT || 3000);
         app.set('port', this.port);
 
-        // Init methods
-        this.start()
-        this.routes()
+        // Server listeners
+        this.server.on('error', this.onError);
+        this.server.on('listening', this.onListening);
+
     }
 
-    private start(): void {
+    start(): void {
         this.server.listen(this.port);
-        this.server.on('error', this.onError);
-        this.server.on('listening', onListening);
         console.log('Starting server...');
     }
 
-    private routes(): void {
-        appRoutes();
+    /** Normalize a port into a number, string, or false. */
+    private normalizePort(val: any): number | string | boolean {
+        let port = parseInt(val, 10);
+        if (isNaN(port)) {
+            // named pipe
+            return val;
+        }
+        if (port >= 0) {
+            // port number
+            return port;
+        }
+        return false;
+    }
+
+    private onListening(): void {
+        const addr = mainServer.server.address();
+        const bind = typeof addr === 'string'
+            ? 'pipe ' + addr
+            : `port ` + addr.port;
+        console.log('Listening on ' + bind);
     }
 
     private onError(error: NodeJS.ErrnoException): void {
@@ -63,6 +58,7 @@ class Server {
         const bind = typeof address === 'string'
             ? 'pipe ' + address
             : 'port: ' + this.port;
+
         // handle specific listen errors with friendly messages
         switch (error.code) {
             case 'EACCES':
@@ -79,5 +75,9 @@ class Server {
     };
 }
 
+
 const mainServer = new Server()
 
+mainServer.start()
+
+appManager()

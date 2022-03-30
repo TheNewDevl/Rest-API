@@ -17,7 +17,7 @@ function connectDB(): void {
 
 const app = express();
 
-export function appRoutes() {
+export const appManager = () => {
 
     // Start connexion to MongoDB
     connectDB()
@@ -25,15 +25,15 @@ export function appRoutes() {
     // Configure CORS for all routes
     app.use(cors())
 
-    // Rend le corps le body de la requête exploitable. = parser
+    // Makes body request exploitable as body parser
     app.use(express.json())
 
-    // Sauce routes
+    // Top level routes
     app.use('/images', express.static(path.join(__dirname, '../images')))
     app.use('/api/auth', userRoutes)
     app.use('/api/sauces', sauceRoutes)
 
-    // app.use pour erreur 404
+    // 404 status for all routes not found
     app.use((req, res, next) => {
         res.status(404).send("Page not found")
     })
