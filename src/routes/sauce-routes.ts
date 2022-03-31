@@ -4,6 +4,7 @@ import auth from '../middleware/auth'
 import multer from '../middleware/multer-config'
 import checkID from '../middleware/own-sauce'
 import inputsCheck from '../middleware/inputs-check'
+import { AppRouterInterface } from '../app'
 
 const router = express.Router()
 
@@ -14,4 +15,10 @@ router.put('/:id', auth, checkID, multer, inputsCheck, sauceControllers.modifySa
 router.delete('/:id', auth, checkID, sauceControllers.deleteSauce)
 router.post('/:id/like', auth, sauceControllers.likeManagement)
 
-export default router
+export default {
+    uri: '/api/sauces',
+    router: router
+} as AppRouterInterface
+
+
+

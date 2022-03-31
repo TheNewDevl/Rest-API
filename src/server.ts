@@ -1,22 +1,37 @@
 /** Import Dependancies */
 import http from 'http'
-import { Pipe } from 'stream'
-import app, { appManager } from './app'
+import { AppManager } from './app'
+import sauceRouter from './routes/sauce-routes'
+import userRouter from './routes/user-routes'
+import mongoose from 'mongoose'
+
+
+const MONGO_URI: string | undefined = process.env.LOG
+const PORT: string | undefined = process.env.PORT
+
 
 class Server {
 
-    readonly port: number | string | boolean
-
     server: http.Server
+    app: AppManager
 
     constructor() {
+        if (MONGO_URI === undefined) {
+            throw new Error("You must specify mongo uri");
+        }
+        if (PORT === undefined) {
+            throw new Error("You must specify PORT");
+        }
+        this.app = new AppManager(MONGO_URI, parseInt(PORT))
+
+        this.app.setRouter(sauceRouter, userRouter)
+        this.app.setDB(mongoose)
+        this.app.init()
 
         //Create HTTP Server
-        this.server = http.createServer(app)
+        this.server = http.createServer(this.app.getExpress())
 
-        // Set port
-        this.port = this.normalizePort(process.env.PORT || 3000)
-        app.set('port', this.port)
+
 
         // Server listeners
         this.server.on('error', this.onError)
@@ -25,23 +40,10 @@ class Server {
     }
 
     start(): void {
-        this.server.listen(this.port)
+        this.server.listen(this.app.getPort())
         console.log('Starting server...')
     }
 
-    /** Normalize a port into a number, string, or false. */
-    private normalizePort(val: any | Pipe): number | string | boolean {
-        const port = parseInt(val, 10)
-        if (isNaN(port)) {
-            // named pipe
-            return val
-        }
-        if (port >= 0) {
-            // port number
-            return port
-        }
-        return false
-    }
 
     private onListening(): void {
         const addr = mainServer.server.address()
@@ -58,7 +60,7 @@ class Server {
         const address = this.server.address()
         const bind = typeof address === 'string'
             ? 'pipe ' + address
-            : 'port: ' + this.port
+            : 'port: ' + this.app.getPort()
 
         // handle specific listen errors with friendly messages
         switch (error.code) {
@@ -80,5 +82,3 @@ class Server {
 const mainServer = new Server()
 
 mainServer.start()
-
-appManager()
