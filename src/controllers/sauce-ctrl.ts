@@ -30,7 +30,7 @@ export const createSauce = async (req: Request, res: Response) => {
 
         delete parsedBody._id
 
-        // Instantiate a new sauce usins the parsed body properties and the file for imageUrl
+        // Instantiate a new sauce using the parsed body properties and the file for imageUrl
         const sauce = new Sauce({
             ...parsedBody,
             imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -47,6 +47,8 @@ export const createSauce = async (req: Request, res: Response) => {
 /** Get all sauces drom DB */
 export const getAllSauces = async (req: Request, res: Response) => {
     try {
+        console.log(req.body)
+
         const sauces = await Sauce.find()
         res.status(200).json(sauces)
     } catch (error) {
@@ -70,7 +72,19 @@ export const getOneSauce = async (req: Request, res: Response) => {
 /** Update one Sauce if exists with or without new file */
 export const modifySauce = async (req: Request, res: Response) => {
     try {
-        // Parse the request body to a JSON object if contains file property
+
+        // If contains file,find the sauce and delete the old image before saving the new one
+        if (req.file) {
+            const sauce = await Sauce.findOne({ _id: req.params.id })
+            const filename = sauce.imageUrl.split('/images/')[1]
+            fs.unlink(`images/${filename}`, (err) => {
+                if (err) {
+                    console.log(err)
+                }
+            })
+        }
+
+        // parse the request body to a JSON object if contains file
         const sauceData = req.file
             ? {
                 ...JSON.parse(req.body.sauce),

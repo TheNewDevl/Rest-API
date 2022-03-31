@@ -9,8 +9,8 @@ const router = express.Router()
 
 router.get('/', auth, sauceControllers.getAllSauces)
 router.get('/:id', auth, sauceControllers.getOneSauce)
-router.post('/', auth, inputsCheck, multer, sauceControllers.createSauce)
-router.put('/:id', auth, checkID, multer, sauceControllers.modifySauce)
+router.post('/', auth, multer, inputsCheck, sauceControllers.createSauce)
+router.put('/:id', auth, checkID, multer, inputsCheck, sauceControllers.modifySauce)
 router.delete('/:id', auth, checkID, sauceControllers.deleteSauce)
 router.post('/:id/like', auth, sauceControllers.likeManagement)
 
