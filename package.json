@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --verbose",
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --pretty --watch\" \"nodemon -r dotenv/config \"",
     "lint": "eslint --ext .ts src --fix"
   },
@@ -14,6 +14,7 @@
   "devDependencies": {
     "@types/eslint": "^8.4.1",
     "@types/express": "^4.17.13",
+    "@types/jest": "^27.4.1",
     "@types/multer": "^1.4.7",
     "@types/node": "^17.0.23",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
@@ -21,7 +22,10 @@
     "concurrently": "^7.0.0",
     "eslint": "^8.12.0",
     "express": "^4.17.3",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.15",
+    "supertest": "^6.2.2",
+    "ts-jest": "^27.1.4",
     "typescript": "^4.6.2"
   },
   "dependencies": {

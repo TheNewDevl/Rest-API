@@ -4,3 +4,4 @@ dist
 images
 package-lock.json
 package-lock.json
+coverage

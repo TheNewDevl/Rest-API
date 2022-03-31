@@ -5,16 +5,19 @@
         "strict": true,
         "module": "commonjs",
         "esModuleInterop": true,
-        "types": [],
+        "types": [
+            "jest"
+        ],
         "sourceMap": true
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
+        "**/*.test.ts",
         "node_modules",
         "./node_modules",
         "./node_modules/*",
         "./node_modules/@types/node/index.d.ts",
-    ]
+    ],
 }
