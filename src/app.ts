@@ -2,9 +2,9 @@
 import express, { Router, Express, Request, Response } from 'express'
 import cors from 'cors'
 import path from 'path'
+import fs from 'fs'
 
 import { Mongoose } from 'mongoose'
-
 
 export interface AppRouterInterface {
     uri: string
@@ -69,6 +69,13 @@ export class AppManager {
 
     setRouter(...router: AppRouterInterface[]) {
         this.routerList = router
+    }
+
+    setImgDir(): void {
+        const dir: string = './images';
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
     }
 }
 

@@ -26,12 +26,11 @@ class Server {
 
         this.app.setRouter(sauceRouter, userRouter)
         this.app.setDB(mongoose)
+        this.app.setImgDir()
         this.app.init()
 
         //Create HTTP Server
         this.server = http.createServer(this.app.getExpress())
-
-
 
         // Server listeners
         this.server.on('error', this.onError)
