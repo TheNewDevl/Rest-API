@@ -5,7 +5,7 @@ import Sauce from '../models/Sauce'
  * Check if the userID corresponds with Sauce user Id
  * prevent deletion or uptade by someone else
  */
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: any, res: Response, next: NextFunction) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id })
         if (!sauce) {

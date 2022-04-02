@@ -1,5 +1,5 @@
 module.exports = {
-  automock: true,
+  //automock: true,
 
   // Automatically clear mock calls, instances and results before every test
   clearMocks: true,
@@ -29,7 +29,8 @@ module.exports = {
   ],
 
   testPathIgnorePatterns: [
-    "/dist/"
+    "/dist/",
+    "/node_modules/"
   ],
 
   //A map from regular expressions to paths to transformers
@@ -44,5 +45,5 @@ module.exports = {
   // ],
 
   // Indicates whether each individual test should be reported during the run
-  // verbose: undefined,
+  verbose: true,
 };

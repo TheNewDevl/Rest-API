@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 
 //TODO ERROR REQ.AUTH add property
-export default (req: Request, res: Response, next: NextFunction) => {
+export default (req: any, res: Response, next: NextFunction) => {
     try {
         // Check if contains Authorization header
         if (!req.headers.authorization) {
