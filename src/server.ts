@@ -3,14 +3,14 @@ import { AppManager } from './app'
 import sauceRouter from './routes/sauce-routes'
 import userRouter from './routes/user-routes'
 import connectDb from './utils/connect-db'
-import config from './config/default'
+import config from './utils/config'
 
 const PORT: number = config.PORT
 
 class Server {
 
-    server: http.Server
-    app: AppManager
+    private server: http.Server
+    private app: AppManager
 
     constructor() {
 
