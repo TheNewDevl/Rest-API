@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import Sauce from '../database/models/Sauce'
 import * as database from '../database/sauce.database'
 import fs from 'fs'
 import { Validation } from '../utils/validation'
