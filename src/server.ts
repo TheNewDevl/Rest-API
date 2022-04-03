@@ -1,14 +1,11 @@
-/** Import Dependancies */
 import http from 'http'
 import { AppManager } from './app'
 import sauceRouter from './routes/sauce-routes'
 import userRouter from './routes/user-routes'
-import mongoose from 'mongoose'
+import connectDb from './utils/connect-db'
+import config from './config/default'
 
-
-const MONGO_URI: string | undefined = process.env.LOG
-const PORT: string | undefined = process.env.PORT
-
+const PORT: number = config.PORT
 
 class Server {
 
@@ -16,16 +13,10 @@ class Server {
     app: AppManager
 
     constructor() {
-        if (MONGO_URI === undefined) {
-            throw new Error("You must specify mongo uri");
-        }
-        if (PORT === undefined) {
-            throw new Error("You must specify PORT");
-        }
-        this.app = new AppManager(MONGO_URI, parseInt(PORT))
+
+        this.app = new AppManager(PORT)
 
         this.app.setRouter(sauceRouter, userRouter)
-        this.app.setDB(mongoose)
         this.app.setImgDir()
         this.app.init()
 
@@ -39,8 +30,10 @@ class Server {
     }
 
     start(): void {
-        this.server.listen(this.app.getPort())
-        console.log('Starting server...')
+        this.server.listen(this.app.getPort(), async () => {
+            console.log('Starting server...')
+            await connectDb()
+        })
     }
 
 

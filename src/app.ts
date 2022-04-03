@@ -4,26 +4,19 @@ import cors from 'cors'
 import path from 'path'
 import fs from 'fs'
 
-import { Mongoose } from 'mongoose'
-
 export interface AppRouterInterface {
     uri: string
     router: Router
 }
 
-
 export class AppManager {
 
     private app: Express | null = null
-    private dataBase: Mongoose | null = null
-    private mongoUri: string
     private routerList: AppRouterInterface[] = []
     private port: number
 
-    constructor(mongoUri: string, port: number = 3000) {
-        this.mongoUri = mongoUri
+    constructor(port: number = 3000) {
         this.port = port
-
     }
 
     init() {
@@ -33,6 +26,7 @@ export class AppManager {
 
         // Configure CORS for all routes
         this.app.use(cors())
+
         // Makes body request exploitable as body parser
         this.app.use(express.json())
 
@@ -41,19 +35,11 @@ export class AppManager {
             this.app.use(route.uri, route.router)
         }
 
-        this.dataBase?.connect(this.mongoUri)
-            .then(() => console.log('Connected to database'))
-            .catch(err => console.log(err))
-
         // 404 status for all routes not found
         this.app.use((req: Request, res: Response) => {
             res.status(404).send('Page not found')
         })
 
-    }
-
-    setDB(dataBase: Mongoose) {
-        this.dataBase = dataBase
     }
 
     getPort(): number {
