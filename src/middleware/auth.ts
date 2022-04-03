@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
+import { NextFunction, Response } from 'express'
+import { verifyToken } from '../utils/jwt'
 
 
 //TODO ERROR REQ.AUTH add property
@@ -11,9 +11,8 @@ export default (req: any, res: Response, next: NextFunction) => {
         } else {
             const token = req.headers.authorization.split(' ')[1]
 
-            // Decode token using secret key 
-            const decodedToken: any = jwt.verify(token, process.env.KEY as string) // TS error La propriété 'auth' n'existe pas sur le type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>
-
+            // Verify Token 
+            const decodedToken: any = verifyToken(token)
             const userId: string = decodedToken.userId
 
             // Store decoded userId in request object to use it in next middlewares

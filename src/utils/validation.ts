@@ -57,4 +57,39 @@ export class Validation {
             throw 'Vous n\'avez pas encore donné votre avis sur cette sauce !'
         }
     }
+
+    heat = (heat: number): boolean => {
+        if (typeof heat === 'number' && heat >= 0 && heat <= 10) {
+            return true
+        }
+        throw 'Doit être un chiffre entre 0 et 10'
+    }
+
+    name = (name: string): boolean => {
+        if (/^([a-zA-Zéàè@êûâç'"-][\s]{0,10}){3,30}$/gm.test(name) && typeof name === 'string') {
+            return true
+        }
+        throw 'Doit être un nom de sauce valide'
+    }
+
+    manufacturer = (manufacturer: string): boolean => {
+        if (/^([a-zA-Zéàè@êûâç'"-][\s]{0,10}){3,30}$/gm.test(manufacturer) && typeof manufacturer === 'string') {
+            return true
+        }
+        throw 'Doit être un nom de fabriquant valide'
+    }
+
+    description = (description: string): boolean => {
+        if (/^([a-zA-Zéàè@êûâç'"-][\s]{0,10}){3,30}$/gm.test(description) && typeof description === 'string') {
+            return true
+        }
+        throw 'Doit être une description valide'
+    }
+
+    mainpepper = (mainPepper: string): boolean => {
+        if (/^([a-zA-Zéàè@êûâç'"-][\s]{0,10}){3,30}$/gm.test(mainPepper) && typeof mainPepper === 'string') {
+            return true
+        }
+        throw 'Doit être un nom de piment principal valide'
+    }
 }

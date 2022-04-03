@@ -14,8 +14,8 @@ export async function find() {
 }
 
 /** Return one sauce from sauce DB using id param */
-export async function findOne(id: string) {
-    const findedSauce = await Sauce.findOne({ _id: id })
+export async function findOne(sauceId: string) {
+    const findedSauce = await Sauce.findOne({ _id: sauceId })
     if (findedSauce) {
         return findedSauce
     } else {
