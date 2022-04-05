@@ -5,7 +5,6 @@ module.exports = {
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
-
   // An array of file extensions your modules use
   moduleFileExtensions: [
     "js",
@@ -25,10 +24,6 @@ module.exports = {
     "/dist/",
     "/node_modules/"
   ],
-
-
   preset: "ts-jest",
-
-  // Indicates whether each individual test should be reported during the run
   verbose: true,
 };

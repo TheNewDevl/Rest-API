@@ -4,7 +4,9 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "test": "jest --verbose --coverage --detectOpenHandles",
+    "compile": "tsc",
+    "server": "node dist/server.js",
+    "test": "jest --coverage --detectOpenHandles",
     "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --pretty --watch\" \"nodemon -r dotenv/config \"",
     "lint": "eslint --ext .ts src --fix"
   },
