@@ -21,7 +21,7 @@ export const createSauce = async (req: Request, res: Response) => {
 
         const newSauce = await database.create(parsedBody, imgUrl)
 
-        res.status(201).json({ message: 'Sauce enregistrée' + newSauce })
+        res.status(201).json({ message: 'Sauce enregistrée', createdSauce: newSauce })
     } catch (error) {
         res.status(400).json({ error: error || 'Erreur serveur' })
     }
@@ -44,7 +44,7 @@ export const getOneSauce = async (req: Request, res: Response) => {
         const findedSauce = await database.findOne(sauceId)
         res.status(200).json(findedSauce)
     } catch (error) {
-        res.status(400).json({ error: error || 'Erreur serveur' })
+        res.status(404).json({ error: error || 'Erreur serveur' })
     }
 }
 
@@ -57,11 +57,7 @@ export const modifySauce = async (req: Request, res: Response) => {
         if (req.file) {
             const sauce = await database.findOne(sauceId)
             const filename = sauce.imageUrl.split('/images/')[1]
-            fs.unlink(`images/${filename}`, (err) => {
-                if (err) {
-                    console.log(err)
-                }
-            })
+            fs.unlink(`images/${filename}`, (err) => { })
         }
 
         // parse the request body to a JSON object if contains file
@@ -74,7 +70,7 @@ export const modifySauce = async (req: Request, res: Response) => {
         // update the sauce in the database using the sauce id and the new sauce data
         const updatedSauce = await database.updateOne(sauceId, sauceData)
 
-        res.status(200).json({ message: 'Sauce modifiée' + updatedSauce })
+        res.status(200).json({ message: 'Sauce enregistrée', updatedSauce: updatedSauce })
     } catch (error) {
         res.status(400).json({ error: error || 'Erreur serveur' })
     }
@@ -87,7 +83,7 @@ export const deleteSauce = async (req: Request, res: Response) => {
         // Find the sauce in DB to use the url to delete the image
         const sauceToDelete = await database.findOne(sauceId)
 
-        // Using unlink method from fs module to delete file in server and use the callback function to check if the file has been deleted
+        // Using unlink method from fs module to delete file in server and use the callback to delete it in DB
         const filename = sauceToDelete.imageUrl.split('/images/')[1]
         fs.unlink(`images/${filename}`, async () => {
             await database.deleteOne(sauceId)

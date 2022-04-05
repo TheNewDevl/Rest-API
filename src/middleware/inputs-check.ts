@@ -26,8 +26,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
                 if (err) {
                     console.log(err)
                 }
-                console.log('image unlinked')
-                res.status(400).json({ error })
+                res.status(400)
             })
         }
         res.status(400).json({ error })

@@ -11,13 +11,6 @@ appClass.setRouter(sauceRoutes, userRoutes)
 appClass.init()
 const app = appClass.getExpress()
 
-describe('GLOBAL ROUTES SUIT TESTS', () => {
-    it('should return a 404 when use an unknowing route', async () => {
-        const res = await supertest(app).get(`/ioyoiu`)
-        expect(res.status).toBe(404)
-    })
-})
-
 describe('USERS ROUTES SUIT TESTS', () => {
     beforeAll(async () => {
         const mongo = await MongoMemoryServer.create()

@@ -1,5 +1,5 @@
 // Import Express
-import express, { Router, Express, Request, Response } from 'express'
+import express, { Router, Express, Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import path from 'path'
 import fs from 'fs'
@@ -34,6 +34,10 @@ export class AppManager {
         for (let route of this.routerList) {
             this.app.use(route.uri, route.router)
         }
+
+        this.app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
+            res.status(500).send({ error: err.stack });
+        });
 
         // 404 status for all routes not found
         this.app.use((req: Request, res: Response) => {
