@@ -4,6 +4,7 @@
 
 * Clone the repo
 
+## BACKEND:
 * In the back folder of the project, run the command `npm install` from the terminal
 
 * src/utils/config.ts manages .env variables. 
@@ -23,3 +24,5 @@
 Run `npm run test` to run all functional tests . Don't hesitate to run this if you change anything in source code. 
 
 Hope you will enjoy this :) !
+
+## TO RUN FRONT APP GO TO FRONT DIR AND FOLLOW THE INCLUDED MD
