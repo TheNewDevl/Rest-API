@@ -4,7 +4,7 @@
 
 * Clone the repo
 
-* In the root folder of the project, run the command `npm install` from the terminal
+* In the back folder of the project, run the command `npm install` from the terminal
 
 * src/utils/config.ts manages .env variables. 
     Create a .env file following this eg 
