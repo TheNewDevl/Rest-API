@@ -8,7 +8,7 @@ type Mimetype = {
 
 const MIME_TYPES: Mimetype = {
     'image/jpg': 'jpg',
-    'image/jpeg': 'jpg',
+    'image/jpeg': 'jpeg',
     'image/png': 'png'
 }
 
@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
         fncallback(null, 'images')
     },
     filename: (req: Request, file: Express.Multer.File, fncallback) => {
-        const name = file.originalname.split(' ').join('_')
+        const name = file.originalname.split(' ').join('_').replace('.', '')
         const extension = MIME_TYPES[file.mimetype]
         fncallback(null, name + Date.now() + '.' + extension)
     }

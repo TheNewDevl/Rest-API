@@ -4,37 +4,30 @@ dotenv.config()
 const config = {
 
     get PORT(): number {
-        if (process.env.PORT === undefined) {
-            throw new Error("You must specify PORT");
-        } else {
-            return parseInt(process.env.PORT)
-        }
+        return parseInt(this.getKey('PORT'))
     },
 
     get LOG(): string {
-        if (process.env.LOG === undefined) {
-            throw new Error("You must specify mongo uri");
-        } else {
-            return process.env.LOG
-        }
+        return this.getKey('LOG')
     },
 
     get KEY(): string {
-        if (process.env.KEY === undefined) {
-            throw new Error("You must specify secret key");
-        } else {
-            return process.env.KEY
-        }
-
+        return this.getKey('KEY')
     },
 
     get NODE_ENV(): string {
-        if (process.env.NODE_ENV === undefined) {
-            throw new Error("You must specify node_env");
+        return this.getKey('NODE_ENV')
+    },
+
+    getKey(key: string): string {
+        const thisKey: string | undefined = process.env[key]
+        if (thisKey === undefined) {
+            throw new Error(`You must specify ${key}`);
         } else {
-            return process.env.NODE_ENV
+            return thisKey
         }
     }
+
 }
 
 export default config

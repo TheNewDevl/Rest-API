@@ -26,7 +26,6 @@ class Server {
         // Server listeners
         this.server.on('error', this.onError)
         this.server.on('listening', this.onListening)
-
     }
 
     start(): void {
@@ -41,7 +40,7 @@ class Server {
         const addr = mainServer.server.address()
         const bind = typeof addr === 'string'
             ? 'pipe ' + addr
-            : 'port ' + addr.port
+            : 'port ' + addr?.port
         console.log('Listening on ' + bind)
     }
 
